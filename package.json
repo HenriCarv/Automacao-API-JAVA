@@ -1,0 +1,9 @@
+{
+  "name": "java-api-tests",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "\"C:\\PROGRA~2\\apache\\maven-mvnd-1.0.2-windows-amd64\\bin\\mvnd.exe\" clean test",
+    "allure-report": "\"C:\\PROGRA~2\\apache\\maven-mvnd-1.0.2-windows-amd64\\bin\\mvnd.exe\" allure:serve",
+    "test-and-report": "\"C:\\PROGRA~2\\apache\\maven-mvnd-1.0.2-windows-amd64\\bin\\mvnd.exe\" clean test allure:serve"
+  }
+}

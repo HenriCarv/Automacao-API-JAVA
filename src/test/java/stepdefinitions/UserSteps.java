@@ -7,6 +7,7 @@ import pageobjects.Endpoints;
 import com.github.javafaker.Faker;
 import org.junit.Assert;
 import support.TestContext;
+import support.AllureHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +39,9 @@ public class UserSteps {
 
         System.out.println("Created User: " + user);
         System.out.println("Response: " + response);
+
+        AllureHelper.attachJson("Created User", user.toString());
+        AllureHelper.attachJson("Response", response.toString());
     }
 
     @Given("I create new user Administrator")
@@ -56,11 +60,15 @@ public class UserSteps {
 
         System.out.println("Created Admin User: " + user);
         System.out.println("Response: " + response);
+
+        AllureHelper.attachJson("Created Admin User", user.toString());
+        AllureHelper.attachJson("Response", response.toString());
     }
 
     @When("the response status code should be {int}")
     public void checkStatusCode(int expected) {
         Assert.assertEquals(expected, context.getResponse().get("statusCode"));
+        AllureHelper.attachText("Status Code", "Expected: " + expected + " | Actual: " + context.getResponse().get("statusCode"));
     }
 
     @Then("the response should contain a success message")
@@ -68,23 +76,28 @@ public class UserSteps {
         Map<String,Object> body = (Map<String,Object>) context.getResponse().get("body");
         Assert.assertTrue(body.containsKey("message"));
         Assert.assertTrue(((String)body.get("message")).toLowerCase().contains("sucesso"));
+
+        AllureHelper.attachJson("Response Body - Success Message", body.toString());
     }
 
     @Then("the response should contain a error message")
     public void checkErrorMessage() {
         Map<String,Object> body = (Map<String,Object>) context.getResponse().get("body");
         Assert.assertTrue(body.size() > 0);
+
+        AllureHelper.attachJson("Response Body - Error Message", body.toString());
     }
 
     @Given("I am authenticated with the new user credentials")
     public void iAmAuthenticatedWithTheNewUserCredentials() {
-        // Reutiliza o usuário criado no contexto
         Map<String,Object> user = context.getCreatedUser();
         if (user == null) {
             throw new RuntimeException("No user available in context. Ensure user creation step ran.");
         }
         context.setCreatedUser(user);
+
         System.out.println("Authenticated User: " + user);
+        AllureHelper.attachJson("Authenticated User", user.toString());
     }
 
     @When("I request a delete with a id of user on-existent")
@@ -96,6 +109,8 @@ public class UserSteps {
         System.out.println("Request URL: " + apiPage.getBaseUrl() + "/usuarios/" + userId);
         System.out.println("Request Method: DELETE");
         System.out.println("Delete Response: " + response);
+
+        AllureHelper.attachJson("Response - DELETE Non-existent User", response.toString());
     }
 
     @When("I request a delete with a id of user")
@@ -110,5 +125,6 @@ public class UserSteps {
         context.setResponse(response);
 
         System.out.println("Delete Response: " + response);
+        AllureHelper.attachJson("Response - DELETE User", response.toString());
     }
 }

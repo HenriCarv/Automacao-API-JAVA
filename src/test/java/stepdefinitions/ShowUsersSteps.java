@@ -6,6 +6,7 @@ import io.cucumber.java.en.Then;
 import org.junit.Assert;
 import pageobjects.Endpoints;
 import support.TestContext;
+import support.AllureHelper;
 
 import java.util.Map;
 
@@ -18,22 +19,22 @@ public class ShowUsersSteps {
         this.context = context;
     }
 
+    // --- LOGIN COM USUÁRIO INEXISTENTE ---
     @Given("I try authenticated with user non-existent")
     public void iTryAuthenticatedWithUserNonExistent() {
         Map<String,Object> response = apiPage.login("blabla@blabla.com", "xpto");
         context.setResponse(response);
 
-        System.out.println("Login attempt with non-existent user: " + response);
+        logRequestAndResponse(apiPage.getBaseUrl() + "/login", "POST", null, response);
     }
 
+    // --- OBTER TODOS OS USUÁRIOS ---
     @When("I request all users")
     public void iRequestAllUsers() {
         Map<String,Object> response = apiPage.getAllUsers();
         context.setResponse(response);
 
-        System.out.println("Request URL: " + apiPage.getBaseUrl() + "/usuarios");
-        System.out.println("Request Method: GET");
-        System.out.println("Response: " + response);
+        logRequestAndResponse(apiPage.getBaseUrl() + "/usuarios", "GET", null, response);
     }
 
     @Then("the response should contain a list of users")
@@ -43,9 +44,11 @@ public class ShowUsersSteps {
         Assert.assertTrue("Usuarios is not an array/list",
                 body.get("usuarios") instanceof java.util.List);
 
-        System.out.println("Response Body: " + body);
+        System.out.println("Validated response contains list of users.");
+        AllureHelper.attachJson("Response Body - List Users", body.toString());
     }
 
+    // --- OBTER USUÁRIO POR ID ---
     @When("I request with a id of users")
     public void iRequestWithIdOfUsers() {
         Map<String,Object> user = context.getCreatedUser();
@@ -57,9 +60,7 @@ public class ShowUsersSteps {
         Map<String,Object> response = apiPage.getUserById(userId);
         context.setResponse(response);
 
-        System.out.println("Request URL: " + apiPage.getBaseUrl() + "/usuarios/" + userId);
-        System.out.println("Request Method: GET");
-        System.out.println("Response: " + response);
+        logRequestAndResponse(apiPage.getBaseUrl() + "/usuarios/" + userId, "GET", null, response);
     }
 
     @Then("the response should contain a user")
@@ -69,17 +70,36 @@ public class ShowUsersSteps {
         Assert.assertTrue("Response does not contain 'email'", body.containsKey("email"));
         Assert.assertTrue("Response does not contain '_id'", body.containsKey("_id"));
 
-        System.out.println("Response Body: " + body);
+        System.out.println("Validated response contains user details.");
+        AllureHelper.attachJson("Response Body - User", body.toString());
     }
 
+    // --- OBTER USUÁRIO POR ID NÃO EXISTENTE ---
     @When("I request a user with a non-existent ID")
     public void iRequestAUserWithNonExistentId() {
         String nonExistentId = "nonexistent123456789";
         Map<String,Object> response = apiPage.getUserById(nonExistentId);
         context.setResponse(response);
 
-        System.out.println("Request URL: " + apiPage.getBaseUrl() + "/usuarios/" + nonExistentId);
-        System.out.println("Request Method: GET");
-        System.out.println("Response: " + response);
+        logRequestAndResponse(apiPage.getBaseUrl() + "/usuarios/" + nonExistentId, "GET", null, response);
+    }
+
+    // --- HELPER PARA LOGAR REQUEST E RESPONSE ---
+    private void logRequestAndResponse(String url, String method, Object payload, Map<String,Object> response) {
+        System.out.println("=== API Request ===");
+        System.out.println("URL: " + url);
+        System.out.println("Method: " + method);
+        if (payload != null) {
+            System.out.println("Payload: " + payload);
+            AllureHelper.attachJson("Request Payload", payload.toString());
+        }
+        System.out.println("--- Response ---");
+        System.out.println("Status Code: " + response.get("statusCode"));
+        System.out.println("Body: " + response.get("body"));
+        System.out.println("Headers: " + response.get("headers"));
+        System.out.println("==================");
+
+        AllureHelper.attachText("Request - " + method + " " + url, method + " " + url);
+        AllureHelper.attachJson("Response - " + url, response.toString());
     }
 }

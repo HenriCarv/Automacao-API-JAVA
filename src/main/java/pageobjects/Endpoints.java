@@ -2,7 +2,6 @@ package pageobjects;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import io.restassured.http.Headers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
@@ -14,7 +13,6 @@ public class Endpoints {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private String token;
 
-    // Rotas
     private static final String LOGIN_ROUTE = "/login";
     private static final String USERS_ROUTE = "/usuarios";
 
@@ -37,23 +35,21 @@ public class Endpoints {
                     .body(jsonBody)
                     .post(LOGIN_ROUTE);
 
-            Map<String, Object> responseMap = createResponseMap(response);
+            Map<String,Object> responseMap = createResponseMap(response);
 
-            // Salva token se existir
             Map<String, Object> bodyMap = (Map<String, Object>) responseMap.get("body");
             if (bodyMap != null && bodyMap.containsKey("authorization")) {
                 this.token = (String) bodyMap.get("authorization");
             }
 
             return responseMap;
-
         } catch (Exception e) {
             return createErrorResponseMap(e, 401);
         }
     }
 
     // --- CREATE USER ---
-    public Map<String, Object> createUser(Map<String, Object> userData) {
+    public Map<String,Object> createUser(Map<String,Object> userData) {
         try {
             String jsonBody = objectMapper.writeValueAsString(userData);
             Response response = RestAssured.given()
@@ -69,7 +65,7 @@ public class Endpoints {
     }
 
     // --- GET ALL USERS ---
-    public Map<String, Object> getAllUsers() {
+    public Map<String,Object> getAllUsers() {
         Response response = RestAssured.given()
                 .baseUri(BASE_URL)
                 .header("Authorization", "Bearer " + this.token)
@@ -79,7 +75,7 @@ public class Endpoints {
     }
 
     // --- GET USER BY ID ---
-    public Map<String, Object> getUserById(String id) {
+    public Map<String,Object> getUserById(String id) {
         try {
             Response response = RestAssured.given()
                     .baseUri(BASE_URL)
@@ -93,10 +89,9 @@ public class Endpoints {
     }
 
     // --- UPDATE USER BY ID ---
-    public Map<String, Object> putChangeUserById(String id, Map<String, Object> userData) {
+    public Map<String,Object> putChangeUserById(String id, Map<String,Object> userData) {
         try {
             String jsonBody = objectMapper.writeValueAsString(userData);
-
             Response response = RestAssured.given()
                     .baseUri(BASE_URL)
                     .header("Authorization", "Bearer " + this.token)
@@ -111,7 +106,7 @@ public class Endpoints {
     }
 
     // --- DELETE USER BY ID ---
-    public Map<String, Object> deleteUserById(String id) {
+    public Map<String,Object> deleteUserById(String id) {
         Response response = RestAssured.given()
                 .baseUri(BASE_URL)
                 .header("Authorization", "Bearer " + this.token)
@@ -121,8 +116,8 @@ public class Endpoints {
     }
 
     // --- Helpers ---
-    private Map<String, Object> createResponseMap(Response response) {
-        Map<String, Object> map = new HashMap<>();
+    private Map<String,Object> createResponseMap(Response response) {
+        Map<String,Object> map = new HashMap<>();
         map.put("statusCode", response.getStatusCode());
         try {
             map.put("body", response.getBody().jsonPath().getMap(""));
@@ -133,8 +128,8 @@ public class Endpoints {
         return map;
     }
 
-    private Map<String, Object> createErrorResponseMap(Exception e, int statusCode) {
-        Map<String, Object> map = new HashMap<>();
+    private Map<String,Object> createErrorResponseMap(Exception e, int statusCode) {
+        Map<String,Object> map = new HashMap<>();
         map.put("statusCode", statusCode);
         map.put("body", Map.of("error", e.getMessage()));
         map.put("headers", new HashMap<>());
