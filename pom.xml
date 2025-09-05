@@ -55,6 +55,15 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- cucumber-picocontainer -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-picocontainer</artifactId>
+            <version>6.10.4</version>
+            <scope>test</scope>
+        </dependency>
+
+
         <!-- JavaFaker -->
         <dependency>
             <groupId>com.github.javafaker</groupId>
