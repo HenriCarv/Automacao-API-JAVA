@@ -6,7 +6,12 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         features = "src/test/resources/features",
         glue = "stepdefinitions",
-        plugin = {"pretty", "html:target/cucumber-reports"}
+        plugin = {
+                "pretty",                                    // saída no console
+                "html:target/cucumber-reports/html",        // relatório HTML
+                "json:target/cucumber-json/cucumber.json",  // necessário para Allure
+                "io.qameta.allure.cucumber6jvm.AllureCucumber6Jvm" // plugin Allure
+        }
 )
 public class RunCucumberTest {
 }

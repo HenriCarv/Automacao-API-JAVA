@@ -32,12 +32,22 @@ jobs:
       - name: Run tests
         run: mvn test
 
-      - name: Upload test results
+      - name: Generate Allure Report
+        run: mvn allure:report
+
+      - name: Upload Cucumber Report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: cucumber-reports
           path: target/cucumber-reports
+
+      - name: Upload Allure Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-report
+          path: target/allure-report
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v2
